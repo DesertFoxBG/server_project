@@ -15,6 +15,7 @@ class Date:
 
 def tick():
     time.sleep(1000)
+    
 
 ip = '127.0.0.1'
 port = 9999
@@ -31,6 +32,8 @@ expect = 0
 expectNum = 0
 flagDate = 0
 flagClock = 0
+result1 = ''
+result2 = ''
 
 while True:
 
@@ -116,5 +119,26 @@ while True:
         print('date: ' + result2)
         flagDate = 0
 
+    while result1 != '' and result2 != '':
+        clock.s = int(clock.s)
+        clock.m = int(clock.m)
+        clock.h = int(clock.h)
+        date.d = int(date.d)
+        date.m = int(date.m)
+        date.y = int(date.y)
+
+        if clock.s == 59:
+            if clock.m == 59:
+                clock.h = clock.h + 1
+                print('hours: ' + str(clock.h))
+                clock.m = 0
+            else:
+                clock.m = clock.m + 1
+                print('minutes: ' + str(clock.m))
+                clock.s = 0
+        else:
+            clock.s = clock.s + 1
+            print('seconds: ' + str(clock.s))
+            time.sleep(1)
     
 
