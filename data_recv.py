@@ -1,5 +1,6 @@
 import socket
 import time
+import threading
 
 class Clock:
     def __main__(self, h, m, s):
@@ -13,8 +14,42 @@ class Date:
         self.m = m
         self.y = y
 
-def tick():
-    time.sleep(1000)
+class Alarm:
+    def __main__(self, date, time):
+        self.date = date
+        self.time = time
+
+class Thread(threading.Thread):
+    def __init__(self, threadID, name, delay, string):
+        threading.Thread.__init__(self)
+        self.threadID = threadID
+        self.name = name
+        self.delay = delay
+        self.string = string
+
+    def run(self):
+        print('Starting' + self.name)
+        Timer(self.name, self.delay, string)
+
+def Timer(name, delay, string):
+    while string != 'stop':
+        clock.s = int(clock.s)
+        clock.m = int(clock.m)
+        clock.h = int(clock.h)
+
+        if clock.m == 59:
+           clock.h = clock.h + 1
+           clock.m = 0
+        else:
+            if clock.s == 59:
+               clock.m = clock.m + 1
+               clock.s = 0
+            else:
+               clock.s = clock.s + 1
+        time.sleep(1)
+
+        result1 = str(clock.h) + ':' + str(clock.m) + ':' + str(clock.s)
+        print('clock: ' + result1)
 
 ip = raw_input('IP: ')
 port = 9999
@@ -24,13 +59,19 @@ sock.bind((ip, port))
 
 clock = Clock()
 date = Date()
-commands = ['set', 'time', 'date']
+commands = ['set', 'time', 'date','alarm']
 maxlenTime = 8
 maxlenDate = 10
 expect = 0
 expectNum = 0
 flagDate = 0
 flagClock = 0
+result1 = ''
+result2 = ''
+alarmNum = 0
+alarms = []
+alarmDate = ''
+alarmTime = ''
 
 while True:
 
@@ -41,14 +82,19 @@ while True:
     if string == 'stop':
         print('Finish')
         break
+    elif string == commands[3]:
+        if expect == 1:
+            expectNum = 1
+        expect = 0
+        alarmNum = 1
     elif string == 'database':
         print('\n------------------+')
         print('Data:             |')
         print('------------------|')
-        result1 = clock.h + ':' + clock.m + ':' + clock.s
-        print('time: ' + result1 + '    |')
-        result2 = date.d + '.' + date.m + '.' + date.y
-        print('date: ' + result2 + '  |')
+        clockRes = str(clock.h) + ':' + str(clock.m) + ':' + str(clock.s)
+        print('time: ' + clockRes + '    |')
+        dateRes = str(date.d) + '.' + str(date.m) + '.' + str(date.y)
+        print('date: ' + dateRes + '  |')
         print('------------------+\n')
     elif string == commands[0]:
         #print('1st')
@@ -97,6 +143,13 @@ while True:
             else:
                 print('ERROR: Not a command!')
                 #break
+
+            if alarmNum == 1:
+                alarmDate = str(date.d) + '.' + str(date.m) + '.' + str(date.y)
+                alarmTime = str(clock.h) + ':' + str(clock.m) + ':' + str(clock)
+                alarm = Alarm(alarmDate, alarmTime)
+                alarms.append(alarm)
+                print(alarms)
         else:
             print('ERROR: Not a command!')
             #break
@@ -117,5 +170,11 @@ while True:
         print('date: ' + result2)
         flagDate = 0
 
-    
-
+    if result1 != '':
+        print('1')
+        activeThreads = threading.activeCount()
+        print(activeThreads)
+        if activeThreads < 2:
+            print('2')
+            thread1 = Thread(1, 'Thread-1', 1, string)
+            thread1.start()
